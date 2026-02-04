@@ -1,164 +1,133 @@
-##### **Comandos usados Practica 2: Configuración de parametros de red.**
+**Comandos usados Practica 2: Configuración de parametros de red.
+Para visualizar el nombre de la conexión:**
 
+nmcli con show
 
+(Para cambiar al metodo automatic o dhcp con el comando nmcli)
 
-**Para visualizar el nombre de la conexión:** 
+sudo nmcli con mod "Wired connection 1" ipv4.method auto
 
-<i>nmcli con show</i>
+sudo nmcli con up "Wired connection 1"
 
+ip a show eth0 (Confirmo cambios de IP)
 
 
-**Para cambiar al metodo automatic o dhcp con el comando nmcli.** 
 
-*sudo nmcli con mod "Wired connection 1" ipv4.method auto*
+(Cambiar a una IP estatica con el comando nmcli)
 
-*sudo nmcli con up "Wired connection 1"* 
+sudo nmcli con mod "Wired connection 1" ipv4.address 192.168.102.10/24
 
-*ip a show eth0* (Confirmo cambios de IP)
+sudo nmcli con mod "Wired connection 1" ipv4.gateway 192.168.102.1
 
+sudo nmcli con mod "Wired connection 1" ipv4.method manual
 
+sudo nmcli con up "Wired connection 1"
 
-***Cambiar a una IP estatica*** <b>con el comando nmcli.*.*</b>
+ip a show eth0 (Confirmo cambios de IP)
 
-<i>sudo nmcli con mod "Wired connection 1" ipv4.address 192.168.102.10/24</i>
 
-<i>sudo nmcli con mod "Wired connection 1" ipv4.gateway 192.168.102.1</i>
 
-<i>sudo nmcli con mod "Wired connection 1" ipv4.method manual</i>
+/etc/network (Ir a la carpeta network para editar el archivo de interfaces)
 
-<i>sudo nmcli con up "Wired connection 1" </i>
+(Modificar IP con DHCP)
 
-<i>ip a show eth0 </i>(Confirmo cambios de IP)
+sudo nano interfaces
 
+systemctl restart networking (Se restaura la red para que los cambios se apliquen)
 
 
-<b>Ir a la carpeta network para editar el archivo de interfaces.</b>
 
-*/etc/network*
+(Modificar IP estatica)
 
+sudo nano interfaces
 
+systemctl restart networking (Se restaura la red para que los cambios se apliquen)
 
-<b>Modificar IP con DHCP</b>
 
-*sudo nano interfaces* 
 
-(Contenido añadido al archivo con nano)
+(Modificar IP con comando dhclient)
 
-	*auto eth0*
+sudo dhclient -r eth0 (Se elimina la IP DHCP anterior)
 
-	*iface eth0 inet dhcp.* 
+sudo dhclient eth0 (Se activa el modo DHCP)
 
-*systemctl restart networking* (Se restaura la red para que los cambios se apliquen)
+ip a show eth0 (Confirmo cambios de IP)
 
 
 
-<b>Modificar IP estatica.</b>
+(Modificar IP estatica temporal)
 
-*sudo nano interfaces*
+sudo ip addre add 192.168.21.40/24 dev eth0 (Añadir IP temporal)
 
-(Contenido añadido al archivo con nano)
+sudo ip route add default via 192.168.21.1 (Añadir gateway)
 
-	*auto eth0*
+ip a show eth0 (Confirmo cambios de IP)
 
-	*iface eth0 inet static*
 
-	*address 192.168.105.30*    
 
-	*netmask 255.255.255.0*
+(Configurar DNS de Google con comando nmcli)
 
-	*gateway 192.168.105.1*
+sudo nmcli con mod "Wired connection 1" ipv4.dns "8.8.8.8,8.8.4.4"
 
-*systemctl restart networking* (Se restaura la red para que los cambios se apliquen)
+sudo nmcli con up "Wired connection 1"
 
-
-
-**Modificar IP con comando dhclient.**
-
-*sudo dhclient -r eth0* (Se elimina la IP DHCP anterior)
-
-*sudo dhclient eth0* (Se activa el modo DHCP)
-
-*ip a show eth0* (Confirmo cambios de IP)
-
-
-
-**Modificar IP estatica temporal.** 
-
-*sudo ip addre add 192.168.21.40/24 dev eth0* (Añadir IP temporal)
-
-*sudo ip route add default via 192.168.21.1* (Añadir gateway)
-
-*ip a show eth0* (Confirmo cambios de IP)
-
-
-
-**Configurar DNS de Google con comando nmcli**
-
-*sudo nmcli con mod "Wired connection 1" ipv4.dns "8.8.8.8,8.8.4.4"*
-
-*sudo nmcli con up "Wired connection 1"* 
-
-*cat /etc/resolv.conf* (Confirmo DNS)
-
-========================================================================================
-
-
-
-
-
-##### **Comandos usados Practica 3: Gestion de Usuario y grupos**
-
-*adduser lissett* (Añado nuevo usuario)
-
-*usermod -aG sudo lissett*(Agrego usuario a sudo)
-
-*groups lissett* (Confirmo los grupos del usuario)
-
-*addgroup guest* (Creo el nuevo grupo)
-
-*adduser maria* (Creo nuevo usuario)
-
-*usermod -aG guest maria* (Agrego usuario a grupo creado anteriormente)
-
-*groups maria* (confirmo los grupos del usuario)
-
-*delgroup guest* (Elimino el grupo)
-
-*deluser maria* (Elimino el usuario)
+cat /etc/resolv.conf (Confirmo DNS)
 
 
 
 ========================================================================================
 
-##### **Comandos usados Practica 4: Gestion de Permisos de archivos**
+**Comandos usados Practica 3: Gestion de Usuario y grupos**
+adduser lissett (Añado nuevo usuario)
 
-*cd Desktop* (Entro para crear las nuevas carpetas aqui)
+usermod -aG sudo lissett(Agrego usuario a sudo)
 
-*mkdir Materia* (Creo nuevo directorio)
+groups lissett (Confirmo los grupos del usuario)
 
-*cd Materia* 
+addgroup guest (Creo el nuevo grupo)
 
-*vi estudiantes.txt*(Creo nuevo archivo dentro de carpeta creada)
+adduser maria (Creo nuevo usuario)
 
-*ls -l* (Observo los permisos de los archivos)
+usermod -aG guest maria (Agrego usuario a grupo creado anteriormente)
 
-*chmod u+x,g=---,o=--- estudiantes.txt* (Agrego permiso de ejecucion al usuario el cual hacia falta para control total del archivo y retiro todos los permisos de grupos y otros)
+groups maria (confirmo los grupos del usuario)
 
-*ls -l* (Verifico permisos)
+delgroup guest (Elimino el grupo)
 
-*chmod 070 estudiantes.txt* (Cambio permisos de los grupos para que tengan control total y retiro permisos de usuarios y otros)
+deluser maria (Elimino el usuario)
 
-*ls -l* (Verifico permisos)
 
-*cd ..*
 
-*mkdir Materia2* (Creo nuevo directorio)
+========================================================================================
 
-*cd Materia*
+**Comandos usados Practica 4: Gestion de Permisos de archivos**
+cd Desktop (Entro para crear las nuevas carpetas aqui)
 
-*cp estudiantes.txt /home/laudys/Desktop/Materia2*  (Copio archivo creado en carpeta inicial a la segunda carpeta creada)
+mkdir Materia (Creo nuevo directorio)
 
-*chmod 770 estudiantes.txt* (Doy control total al usuario nuevamente para poder remover directorio con archivo)
+cd Materia
 
-*rm -r Materia* (elimino carpeta)
+vi estudiantes.txt(Creo nuevo archivo dentro de carpeta creada)
+
+ls -l (Observo los permisos de los archivos)
+
+chmod u+x,g=---,o=--- estudiantes.txt (Agrego permiso de ejecucion al usuario el cual hacia falta para control total del archivo y retiro todos los permisos de grupos y otros)
+
+ls -l (Verifico permisos)
+
+chmod 070 estudiantes.txt (Cambio permisos de los grupos para que tengan control total y retiro permisos de usuarios y otros)
+
+ls -l (Verifico permisos)
+
+cd ..
+
+mkdir Materia2 (Creo nuevo directorio)
+
+cd Materia
+
+cp estudiantes.txt /home/laudys/Desktop/Materia2 (Copio archivo creado en carpeta inicial a la segunda carpeta creada)
+
+chmod 770 estudiantes.txt (Doy control total al usuario nuevamente para poder remover directorio con archivo)
+
+rm -r Materia (elimino carpeta)
 
