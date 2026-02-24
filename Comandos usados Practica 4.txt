@@ -1,0 +1,45 @@
+Comandos usados Practica 1.
+
+sudo apt update (Actualiza la lista de paquetes disponibles).
+sudo apt install apache2 -y (Instala el servidor web Apache).
+sudo systemctl start apache2 (Inicia el servicio del servidor Apache).
+sudo systemctl enable apache2 (Configura Apache para que se inicie automáticamente al encender).
+sudo systemctl status apache2 (Verifica si el servidor está activo y funcionando).
+sudo mkdir -p /var/www/sitio80 (Crea la carpeta donde se guardarán los archivos del primer sitio web).
+sudo nano /var/www/sitio80/index.html (Crea contenido visual de la página para el puerto 80).
+sudo nano /etc/apache2/sites-available/sitio80.conf (Crea el archivo de configuración para definir el comportamiento del sitio 80).
+sudo a2dissite 000-default.conf (Desactiva el sitio web que Apache trae configurado por defecto).
+sudo a2ensite sitio80.conf (Activa el nuevo sitio web para el puerto 80).
+sudo systemctl restart apache2 (Reinicia Apache para que aplique todos los cambios).
+sudo mkdir -p /var/www/sitio8080 (Crea la carpeta separada para los archivos del segundo sitio web).
+sudo nano /var/www/sitio8080/index.html (Crea el contenido visual de la página para el puerto 8080).
+sudo nano /etc/apache2/ports.conf (Edita el archivo donde se le ordena a Apache que escuche en el puerto 8080).
+sudo nano /etc/apache2/sites-available/sitio8080.conf (Crea la configuración para que el puerto 8080 ingrese a su propia carpeta).
+sudo a2ensite sitio8080.conf (Activa el segundo sitio web en el sistema).
+sudo systemctl restart apache2 (Reinicia el servicio).
+
+
+=============================================================================
+Comandos usados Practica 2.
+
+sudo apt install postfix mailutils -y (Instala el servidor de correos y las herramientas para enviar mensajes desde la terminal).
+sudo postconf -e "myhostname = kali.local" (Define el nombre de dominio local que identificará el servidor de correos).
+sudo postconf -e "inet_protocols = ipv4" (Configura el servidor para que utilice exclusivamente el protocolo de red IPv4).
+sudo nano /etc/postfix/sasl_passwd (Crea el archivo donde se guardan el servidor de Google y contraseña de aplicación).
+sudo chmod 600 /etc/postfix/sasl_passwd (Restringe los permisos del archivo para que solo el administrador pueda leer la contraseña).
+sudo postmap /etc/postfix/sasl_passwd (Indexa el archivo de contraseña para que Postfix pueda leerlo como una base de datos).
+sudo nano /etc/postfix/main.cf (Edita la configuración principal para añadir los parámetros de seguridad y el relay de Gmail).
+sudo newaliases (Actualiza la base de datos de alias de correo del sistema).
+sudo systemctl restart postfix (Reinicia el servicio para que el servidor reconozca toda la nueva configuración).
+mail -s "MambruSeFueALaGuerra" os3conadrian@gmail.com (Comando para redactar y enviar el correo de prueba con un asunto específico).
+
+=============================================================================
+Comandos usados Practica 3.
+
+sudo apt install cups printer-driver-cups-pdf -y (Instala el sistema de impresión CUPS y el controlador para generar archivos PDF).
+sudo cupsctl --remote-admin --remote-any --share-printers (Habilita la administración remota y permite compartir la impresora con otros equipos de la red).
+lpinfo -m | grep "PDF" (Busca en el sistema todos los controladores disponibles que sean compatibles con el formato PDF).
+sudo lpadmin -p PDF_Virtual -v cups-pdf:/ -E -m lsb/usr/cups-pdf/CUPS-PDF_opt.ppd (Crea la impresora, la activa y le asigna el controlador específico).
+sudo lpadmin -p PDF_Virtual -o auth-info-required=none (Configura la impresora para que no pida usuario ni contraseña al imprimir desde Windows).
+sudo systemctl restart cups (Reinicia el servicio de impresión para aplicar todos los cambios de red y permisos).
+ls -l /var/spool/cups-pdf/ANONYMOUS/ (Lista el contenido de la carpeta donde se guardan los documentos PDF generados para verificar que la impresión fue exitosa).
