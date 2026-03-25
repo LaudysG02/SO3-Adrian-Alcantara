@@ -1,0 +1,155 @@
+=============================================================================
+Comandos usados Practica 1.
+=============================================================================
+
+sudo apt update  
+(Actualiza la lista de paquetes)
+
+sudo apt install docker.io -y  
+(Instala Docker sin pedir confirmación)
+
+sudo systemctl start docker  
+(Inicia el servicio de Docker)
+
+sudo systemctl enable docker  
+(Configura Docker para que se inicie automáticamente al arrancar el sistema)
+
+sudo docker pull nginx  
+(Descarga la imagen oficial de Nginx desde Docker Hub)
+
+sudo mkdir -p /home/website  
+(Crea el directorio donde se guardarán los archivos del sitio web)
+
+sudo nano /home/website/index.html  
+(Crea el archivo HTML para editar la página web)
+
+sudo docker run -d \
+-p 8888:80 \
+-v /home/website:/usr/share/nginx/html \
+--name mi_nginx \
+nginx  
+(Ejecuta un contenedor Nginx en segundo plano, enlazando el puerto 8888 de la VM y montando el contenido web ene l puerto 80 del contenedor)
+
+sudo docker ps  
+(Muestra los contenedores Docker que están en ejecución)
+
+=============================================================================
+Comandos usados Practica 2.
+=============================================================================
+sudo docker volume create portainer_data  
+(Crea un volumen persistente en Docker para almacenar los datos de Portainer)
+
+sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer \
+    --restart=always \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v portainer_data:/var/lib/portainer \
+    portainer/portainer-ce:latest  
+(Ejecuta Portainer en segundo plano, exponiendo sus puertos, conectándolo al socket de Docker y usando un volumen para guardar su configuración de forma persistente)
+
+
+=============================================================================
+Comandos usados Practica 3.
+=============================================================================
+
+sudo apt install docker-compose -y  
+(Instala Docker Compose para gestionar múltiples contenedores)
+
+mkdir wordpress  
+(Crea una carpeta para WordPress)
+
+cd wordpress  
+(Entra en la carpeta )
+
+nano docker-compose.yml  
+(Crea y edita el archivo de configuración de Docker Compose)
+
+# Contenido del archivo docker-compose.yml
+version: '3.8'  
+(Define la versión del formato de Docker Compose)
+
+services:  
+(Sección donde se definen los contenedores)
+
+  db:  
+  (Servicio de base de datos MySQL)
+
+    image: mysql:5.7  
+    (Usa la imagen oficial de MySQL versión 5.7)
+
+    container_name: wordpress_db  
+    (Asigna un nombre al contenedor de la base de datos)
+
+    restart: always  
+    (Reinicia automáticamente el contenedor si se detiene)
+
+    environment:  
+    (Define variables de entorno para configurar MySQL)
+
+      MYSQL_ROOT_PASSWORD: root123  
+      (Contraseña del usuario root de MySQL)
+
+      MYSQL_DATABASE: wordpress  
+      (Crea la base de datos llamada wordpress)
+
+      MYSQL_USER: user  
+      (Crea un usuario para la base de datos)
+
+      MYSQL_PASSWORD: user123  
+      (Contraseña del usuario creado)
+
+    volumes:  
+    (Define almacenamiento persistente)
+
+      - db_data:/var/lib/mysql  
+      (Guarda los datos de MySQL en un volumen llamado db_data)
+
+  wordpress:  
+  (Servicio del sitio web WordPress)
+
+    image: wordpress  
+    (Usa la imagen oficial de WordPress)
+
+    container_name: wordpress_web  
+    (Nombre del contenedor de WordPress)
+
+    restart: always  
+    (Reinicia automáticamente el contenedor si se detiene)
+
+    ports:  
+    (Mapea puertos del host al contenedor)
+
+      - "8090:80"  
+      (Permite acceder a WordPress desde el puerto 8090)
+
+    environment:  
+    (Variables de conexión a la base de datos)
+
+      WORDPRESS_DB_HOST: db:3306  
+      (Indica el host del servicio MySQL)
+
+      WORDPRESS_DB_USER: user  
+      (Usuario de la base de datos)
+
+      WORDPRESS_DB_PASSWORD: user123  
+      (Contraseña del usuario)
+
+      WORDPRESS_DB_NAME: wordpress  
+      (Nombre de la base de datos)
+
+    depends_on:  
+    (Indica que WordPress depende del servicio db)
+
+      - db  
+
+volumes:  
+(Define los volúmenes utilizados)
+
+  db_data:  
+  (Crea el volumen persistente para la base de datos)
+
+
+sudo docker-compose up -d  
+(Levanta todos los servicios definidos en segundo plano)
+
+sudo docker ps  
+(Muestra los contenedores que están corriendo)
