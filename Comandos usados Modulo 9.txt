@@ -1,0 +1,178 @@
+=============================================================================
+Comandos usados Practica 1.
+=============================================================================
+
+sudo apt update
+(Actualiza la lista de paquetes disponibles)
+
+sudo apt install wget apt-transport-https software-properties-common -y
+(Instala herramientas necesarias para descargar paquetes)
+
+wget http://www.webmin.com/download/deb/webmin-current.deb
+(Descarga el paquete .deb de Webmin en su pagina oficial)
+
+sudo dpkg -i webmin-current.deb
+(Instala el paquete descargado)
+
+sudo apt --fix-broken install -y
+(Corrige dependencias faltantes en la instalación)
+
+sudo systemctl start webmin
+(Inicia el servicio de Webmin)
+
+sudo systemctl enable webmin
+(Activa Webmin para que inicie automáticamente)
+
+
+=============================================================================
+Comandos usados Practica 2.
+=============================================================================
+sudo apt update
+(Actualiza la lista de paquetes)
+
+sudo apt install -y gnupg software-properties-common
+(Instala herramientas para claves y repositorios)
+
+wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+(Descarga y guarda la clave GPG de HashiCorp)
+
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+(Agrega el repositorio de HashiCorp)
+
+sudo apt install terraform -y
+(Instala Terraform)
+
+ssh-keygen -t rsa -b 4096
+(Genera una clave SSH segura para copiar en Digital Ocean y obtener la fingerprint)
+
+mkdir terraform-do
+(Crea carpeta)
+
+cd terraform-do
+(Entra a la carpeta)
+
+nano main.tf
+(Crea archivo de configuración para crear la vm)
+
+terraform init
+(Inicializa el proyecto Terraform definido en el main.tf)
+
+terraform plan
+(Muestra los cambios a aplicar)
+
+terraform apply
+(Ejecuta la configuración y crea la vm en DigitalOcean)
+
+
+=============================================================================
+Comandos usados Practica 3.
+=============================================================================
+sudo apt update
+(Actualiza la lista de paquetes)
+
+sudo apt install ansible -y
+(Instala Ansible)
+
+#VM Linux en DigitalOcean#
+sudo adduser ansible
+(Crea usuario ansible)
+
+sudo usermod -aG sudo ansible
+(Agrega ansible al grupo sudo)
+
+mkdir -p /home/ansible/.ssh
+(Crea carpeta SSH del usuario)
+
+cp /root/.ssh/authorized_keys /home/ansible/.ssh/
+(Copia claves SSH autorizadas de root a user ansible)
+
+chown -R ansible:ansible /home/ansible/.ssh
+(Cambia propietario de la carpeta)
+
+chmod 700 /home/ansible/.ssh
+(Da permisos seguros a la carpeta)
+
+chmod 600 /home/ansible/.ssh/authorized_keys
+(Da permisos seguros a la clave)
+
+
+#VM de Windows 10#
+Start-Service sshd
+(Inicia servicio SSH)
+
+Set-Service -Name sshd -StartupType Automatic
+(Configura SSH automático)
+
+net user ansible 1234 /add
+(Crea usuario ansible)
+
+net localgroup Administrators ansible /add
+(Agrega ansible a administradores)
+
+
+#VM de kali Linux. Ansible controller#
+sudo nano /etc/ansible/hosts
+(Edita archivo de inventario de los usuarios creados en ambas vm)
+
+ansible linux -m ping
+(Prueba conexión a Linux ansible)
+
+ansible win -m win_ping -k
+(Prueba conexión a Windows ansible)
+
+
+=============================================================================
+Comandos usados Practica 4.
+=============================================================================
+ansible win -m win_copy -a 'src=C:\Users\ansible\Desktop\Archivo.txt dest=C:\Users\ansible\Documents\Archivo.txt remote_src=true'
+(Copia archivo en Windows con Ansible desde el escritorio a documentos)
+
+sudo visudo
+(Edita configuración segura de sudo en la vm Linux en Digital Ocean)
+
+ansible ALL=(ALL) NOPASSWD: ALL
+(Permite sudo sin contraseña al usuario ansible para hacer el reboot)
+
+ansible linux -m reboot -b
+(Reinicia hosts Linux con privilegios)
+
+sudo ip link set dev eth0 mtu 1400
+(Cambia el MTU de la interfaz cuando hay probelmas al conectar por SSH)
+
+
+=============================================================================
+Comandos usados Practica 5.
+=============================================================================
+nano install_notepad.yml
+(Crea el playbook para Windows)
+- name: Instalar Notepad++ en Windows (Nombra el playbook)
+  hosts: win (Aplica a Windows)
+  Tasks: (Lista de tareas)
+    - name: Instalar Notepad++
+      win_chocolatey:  (Usa Chocolatey en Windows)
+         name: notepadplusplus  (Paquete a instalar)
+        state: present (Instala el programa)
+       
+ansible-playbook install_notepad.yml
+(Ejecuta playbook en Windows)
+
+nano install_nginx.yml(Crea el playbook de NGINX)
+- name: Instalar y configurar NGINX
+  hosts: linux (Aplica a Linux)
+  become: true (Usa privilegios root)
+  Tasks:
+    - name: Actualizar repositorios
+         apt: (Usa módulo apt)
+        update_cache: yes (Actualiza paquetes)
+    - name: Instalar NGINX
+        apt:
+         name: nginx (Paquete nginx)
+        state: present (Instala nginx)
+    - name: Iniciar servicio NGINX
+      service: (Usa módulo service)
+        name: nginx
+        state: started(Inicia servicio)
+        enabled: true (Activa al inicio)
+
+ansible-playbook install_nginx.yml(
+Ejecuta playbook en Linux)
